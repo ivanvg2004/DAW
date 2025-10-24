@@ -1,0 +1,15 @@
+version: '2.2'
+
+services:
+  tomcat:
+    image: tomcat:9
+    ports:
+      - "8080:8080"
+      - "8000:8000"
+    volumes:
+      - "./webapps:/usr/local/tomcat/webapps"
+    #entrypoint: /usr/local/tomcat/bin/catalina.sh jpda run
+    environment:
+      #JPDA_ADDRESS: 8000
+      #JPDA_TRANSPORT: dt_socket
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
