@@ -31,7 +31,7 @@
                         <th scope="col">ID</th>
                         <th scope="col">Nom</th>
                         <th scope="col">Usuari</th>
-                        <th scope="col">Data Creació</th>
+                        <th scope="col">Data Creacio</th>
                         <th scope="col" class="text-end">Accions</th>
                     </tr>
                 </thead>

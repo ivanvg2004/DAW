@@ -1,0 +1,15 @@
+com/paint/servlets/DAOS/CanvasDAO.class
+com/paint/servlets/controllers/CanvasController.class
+com/paint/servlets/models/Canvas.class
+com/paint/servlets/services/UserService.class
+com/paint/servlets/controllers/DibuixosController.class
+com/paint/servlets/controllers/LoginController.class
+com/paint/servlets/DTO/DibuixDTO.class
+com/paint/servlets/controllers/IndexController.class
+com/paint/servlets/controllers/RegisterController.class
+com/paint/servlets/controllers/PrivateController.class
+com/paint/servlets/services/CanvasService.class
+com/paint/servlets/DAOS/UserDAO.class
+com/paint/servlets/models/User.class
+com/paint/servlets/controllers/EsborrarController.class
+com/paint/servlets/controllers/VisualitzarController.class

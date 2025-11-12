@@ -1,0 +1,15 @@
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/controllers/CanvasController.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/controllers/LoginController.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/services/UserService.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/services/CanvasService.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/controllers/RegisterController.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/controllers/DibuixosController.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/DAOS/UserDAO.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/controllers/IndexController.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/DTO/DibuixDTO.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/DAOS/CanvasDAO.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/controllers/PrivateController.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/controllers/EsborrarController.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/models/Canvas.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/controllers/VisualitzarController.java
+/home/ivan/DAW/Cliente/Practicas/p1Front/src/main/java/com/paint/servlets/models/User.java

@@ -1,6 +1,7 @@
 version: '2.2'
 
 services:
+  
   tomcat:
     image: tomcat:9
     ports:
@@ -8,8 +9,42 @@ services:
       - "8000:8000"
     volumes:
       - "./webapps:/usr/local/tomcat/webapps"
-    #entrypoint: /usr/local/tomcat/bin/catalina.sh jpda run
     environment:
-      #JPDA_ADDRESS: 8000
-      #JPDA_TRANSPORT: dt_socket
       JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+      DB_URL: "jdbc:mysql://mysql_db:3306/paint_db" 
+      DB_USER: "paint_user"
+      DB_PASS: "paint_password"
+    depends_on:
+      mysql_db:
+        condition: service_healthy 
+
+  mysql_db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "rootpassword"
+      MYSQL_DATABASE: "paint_db"
+      MYSQL_USER: "paint_user"
+      MYSQL_PASSWORD: "paint_password"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      # --- LÍNEA MODIFICADA ---
+      # Esto guardará los datos en una NUEVA carpeta llamada 'mysql-data'
+      # que aparecerá DENTRO de tu carpeta 'p1/tomcat/'.
+      - ./mysql-data:/var/lib/mysql 
+      
+      # El script de inicialización se mantiene igual
+      - ./init-db:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql_db
+      PMA_PORT: 3306
+    depends_on:
+      - mysql_db
