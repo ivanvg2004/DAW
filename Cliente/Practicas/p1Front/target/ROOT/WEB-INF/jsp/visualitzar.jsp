@@ -23,8 +23,8 @@
                 Visualitzant: <c:out value="${dibuix.name}" />
             </h1>
             
-            <div class="text-center">
-                <canvas id="readOnlyCanvas" width="800" height="600" style="width: 100%; height: auto; max-width: 800px; background-color: white; border-radius: 0.25rem;">
+            <div class="text-center" style="overflow: auto;">
+                <canvas id="readOnlyCanvas" width="${dibuix.width}" height="${dibuix.height}" style="background-color: white; border-radius: 0.25rem; border: 1px solid #a0a0a0; width: 100%; height: auto; max-width: 100%;">
                 </canvas>
             </div>
             

@@ -34,17 +34,25 @@ function drawObject(ctx, obj) {
             obj.points.forEach(p => ctx.lineTo(p.x, p.y));
             ctx.stroke();
             break;
-        case "line":
-            ctx.moveTo(obj.x1 || obj.x, obj.y1 || obj.y);
-            ctx.lineTo(obj.x2, obj.y2);
-            ctx.stroke();
+        case "triangle":
+            const p1x = obj.x1 || obj.x;
+            const p1y = obj.y1 || obj.y;
+            const p2x = obj.x2;
+            const p2y = obj.y2;
+            const p3x = obj.x3 || (2 * p1x - p2x);
+            const p3y = obj.y3 || obj.y2;
+            ctx.moveTo(p1x, p1y);
+            ctx.lineTo(p2x, p2y);
+            ctx.lineTo(p3x, p3y);
+            ctx.closePath();
+            if (obj.isFilled) ctx.fill(); else ctx.stroke();
             break;
         case "circle":
-            ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
+            ctx.ellipse(obj.x, obj.y, obj.radiusX, obj.radiusY, 0, 0, Math.PI * 2);
             if (obj.isFilled) ctx.fill(); else ctx.stroke();
             break;
         case "square":
-            ctx.rect(obj.x - obj.radius, obj.y - obj.radius, obj.radius * 2, obj.radius * 2);
+            ctx.rect(obj.x, obj.y, obj.width, obj.height);
             if (obj.isFilled) ctx.fill(); else ctx.stroke();
             break;
         case "star":

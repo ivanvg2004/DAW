@@ -46,8 +46,11 @@
                             </td>
                             <td class="text-end">
                                 <a href="${pageContext.request.contextPath}/visualitzar?id=${dibuix.id}" class="btn btn-sm btn-info">Visualitzar</a>
-                                
+
                                 <c:if test="${sessionScope.user eq dibuix.username}">
+
+                                    <a href="${pageContext.request.contextPath}/canvas?id=${dibuix.id}" class="btn btn-sm btn-success">Editar</a>
+
                                     <button type="button" class="btn btn-sm btn-danger btn-esborrar" data-id="${dibuix.id}">
                                         Esborrar
                                     </button>

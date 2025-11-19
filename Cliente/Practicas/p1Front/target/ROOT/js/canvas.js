@@ -10,6 +10,15 @@ const objectListUl = document.getElementById("object-list");
 const saveForm = document.getElementById("save-form");
 const drawingContentInput = document.getElementById("drawingContent");
 
+const widthInput = document.getElementById("input-width");
+const heightInput = document.getElementById("input-height");
+const formWidthInput = document.getElementById("formCanvasWidth");
+const formHeightInput = document.getElementById("formCanvasHeight");
+
+const scaleUpBtn = document.getElementById("scale-up-btn");
+const scaleDownBtn = document.getElementById("scale-down-btn");
+const objectControls = document.getElementById("object-controls");
+
 const fillButton = document.getElementById("fill-btn");
 const undoButton = document.getElementById("undo-btn");
 const redoButton = document.getElementById("redo-btn");
@@ -21,44 +30,50 @@ let currentColor = colorPicker.value;
 let currentSize = sizeSlider.value;
 let startX, startY;
 
+let isDragging = false;
+let selectedObjectIndex = -1;
+let lastMouseX, lastMouseY;
+
 let objects = [];
 let history = [[]];
 let historyIndex = 0;
 
 function redrawCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    objects.forEach(obj => {
+    objects.forEach((obj, index) => {
         drawObject(obj);
+        if (index === selectedObjectIndex) {
+            drawSelectionBox(obj);
+        }
     });
 }
 
-function drawObject(obj) {
-    ctx.strokeStyle = obj.color;
-    ctx.fillStyle = obj.color;
-    ctx.lineWidth = obj.size;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-
+function definePath(obj) {
     ctx.beginPath();
-
     switch(obj.type) {
         case "freehand":
-            ctx.moveTo(obj.points[0].x, obj.points[0].y);
-            obj.points.forEach(p => ctx.lineTo(p.x, p.y));
-            ctx.stroke();
+            if(obj.points.length > 0) {
+                ctx.moveTo(obj.points[0].x, obj.points[0].y);
+                obj.points.forEach(p => ctx.lineTo(p.x, p.y));
+            }
             break;
-        case "line":
-            ctx.moveTo(obj.x1 || obj.x, obj.y1 || obj.y);
-            ctx.lineTo(obj.x2, obj.y2);
-            ctx.stroke();
+        case "triangle":
+            const p1x = obj.x1 || obj.x;
+            const p1y = obj.y1 || obj.y;
+            const p2x = obj.x2;
+            const p2y = obj.y2;
+            const p3x = obj.x3 || (2 * p1x - p2x);
+            const p3y = obj.y3 || obj.y2;
+            ctx.moveTo(p1x, p1y);
+            ctx.lineTo(p2x, p2y);
+            ctx.lineTo(p3x, p3y);
+            ctx.closePath();
             break;
         case "circle":
-            ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
-            if (obj.isFilled) ctx.fill(); else ctx.stroke();
+            ctx.ellipse(obj.x, obj.y, Math.abs(obj.radiusX), Math.abs(obj.radiusY), 0, 0, Math.PI * 2);
             break;
         case "square":
-            ctx.rect(obj.x - obj.radius, obj.y - obj.radius, obj.radius * 2, obj.radius * 2);
-            if (obj.isFilled) ctx.fill(); else ctx.stroke();
+            ctx.rect(obj.x, obj.y, obj.width, obj.height);
             break;
         case "star":
             const spikes = 7;
@@ -68,8 +83,6 @@ function drawObject(obj) {
             let x = obj.x;
             let y = obj.y;
             let step = Math.PI / spikes;
-
-            ctx.beginPath();
             ctx.moveTo(obj.x, obj.y - outerRadius);
             for (let i = 0; i < spikes; i++) {
                 x = obj.x + Math.cos(rot) * outerRadius;
@@ -83,9 +96,81 @@ function drawObject(obj) {
             }
             ctx.lineTo(obj.x, obj.y - outerRadius);
             ctx.closePath();
-            if (obj.isFilled) ctx.fill(); else ctx.stroke();
             break;
     }
+}
+
+function drawObject(obj) {
+    ctx.strokeStyle = obj.color;
+    ctx.fillStyle = obj.color;
+    ctx.lineWidth = obj.size;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    definePath(obj); 
+
+    if (obj.type === "freehand") {
+        ctx.stroke();
+    } else {
+        if (obj.isFilled) ctx.fill(); else ctx.stroke();
+    }
+}
+
+function drawSelectionBox(obj) {
+    ctx.save();
+    ctx.strokeStyle = "#00AAFF";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    definePath(obj);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function getObjectAt(x, y) {
+    for (let i = objects.length - 1; i >= 0; i--) {
+        const obj = objects[i];
+        ctx.lineWidth = Math.max(10, obj.size); 
+        definePath(obj);
+        
+        if (obj.isFilled && obj.type !== "freehand") {
+            if (ctx.isPointInPath(x, y)) return i;
+        } else {
+            if (ctx.isPointInStroke(x, y)) return i;
+        }
+    }
+    return -1;
+}
+
+function selectObject(index) {
+    selectedObjectIndex = index;
+    
+    if (index !== -1) {
+        const obj = objects[index];
+        colorPicker.value = obj.color;
+        currentColor = obj.color;
+        sizeSlider.value = obj.size;
+        currentSize = obj.size;
+        sizeValueSpan.textContent = obj.size;
+        
+        isFilled = obj.isFilled || false;
+        if (isFilled) fillButton.classList.add("active");
+        else fillButton.classList.remove("active");
+        
+        setTool("select");
+        objectControls.classList.remove("d-none");
+    } else {
+        objectControls.classList.add("d-none");
+    }
+    
+    redrawCanvas();
+    updateObjectList();
+}
+
+function setTool(toolName) {
+    currentTool = toolName;
+    document.querySelector(".tool-btn.active")?.classList.remove("active");
+    const btn = document.querySelector(`.tool-btn[data-tool="${toolName}"]`);
+    if (btn) btn.classList.add("active");
 }
 
 function updateObjectList() {
@@ -93,16 +178,22 @@ function updateObjectList() {
     
     objects.forEach((obj, index) => {
         const li = document.createElement("li");
-        li.className = "list-group-item";
+        li.className = `list-group-item ${index === selectedObjectIndex ? 'active' : ''}`;
+        
+        li.onclick = (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.parentElement.tagName === 'BUTTON') return;
+            selectObject(index);
+        };
         
         const text = document.createElement("span");
-        const fillText = obj.isFilled ? " (Filled)" : "";
+        const fillText = obj.isFilled ? " (Ple)" : "";
         text.textContent = `${index + 1}: ${obj.name}${fillText}`;
         
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "btn btn-outline-danger btn-sm";
-        deleteBtn.innerHTML = "&times;";
-        deleteBtn.onclick = () => {
+        deleteBtn.innerHTML = '&times;';
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
             deleteObject(index);
         };
         
@@ -114,9 +205,15 @@ function updateObjectList() {
 
 function addObject(obj) {
     objects.push(obj);
+    selectedObjectIndex = -1;
+    objectControls.classList.add("d-none");
 }
 
 function deleteObject(index) {
+    if (index === selectedObjectIndex) {
+        selectedObjectIndex = -1;
+        objectControls.classList.add("d-none");
+    }
     objects.splice(index, 1);
     redrawCanvas();
     updateObjectList();
@@ -134,6 +231,8 @@ function undo() {
     if (historyIndex > 0) {
         historyIndex--;
         objects = JSON.parse(JSON.stringify(history[historyIndex]));
+        selectedObjectIndex = -1;
+        objectControls.classList.add("d-none");
         redrawCanvas();
         updateObjectList();
         updateUndoRedoButtons();
@@ -144,6 +243,8 @@ function redo() {
     if (historyIndex < history.length - 1) {
         historyIndex++;
         objects = JSON.parse(JSON.stringify(history[historyIndex]));
+        selectedObjectIndex = -1;
+        objectControls.classList.add("d-none");
         redrawCanvas();
         updateObjectList();
         updateUndoRedoButtons();
@@ -157,28 +258,116 @@ function updateUndoRedoButtons() {
 
 toolButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-        document.querySelector(".tool-btn.active").classList.remove("active");
-        btn.classList.add("active");
-        currentTool = btn.dataset.tool;
+        setTool(btn.dataset.tool);
+        if (currentTool !== "select") {
+            selectedObjectIndex = -1;
+            objectControls.classList.add("d-none");
+            redrawCanvas();
+            updateObjectList();
+        }
     });
 });
 
 fillButton.addEventListener("click", () => {
     isFilled = !isFilled;
     fillButton.classList.toggle("active");
+    if (selectedObjectIndex !== -1) {
+        objects[selectedObjectIndex].isFilled = isFilled;
+        redrawCanvas();
+        updateObjectList();
+        saveState();
+    }
 });
 
 colorPicker.addEventListener("input", (e) => {
     currentColor = e.target.value;
+    if (selectedObjectIndex !== -1) {
+        objects[selectedObjectIndex].color = currentColor;
+        redrawCanvas();
+    }
 });
+colorPicker.addEventListener("change", () => { if (selectedObjectIndex !== -1) saveState(); });
 
 sizeSlider.addEventListener("input", (e) => {
     currentSize = e.target.value;
     sizeValueSpan.textContent = currentSize;
+    if (selectedObjectIndex !== -1) {
+        objects[selectedObjectIndex].size = currentSize;
+        redrawCanvas();
+    }
+});
+sizeSlider.addEventListener("change", () => { if (selectedObjectIndex !== -1) saveState(); });
+
+function scaleSelectedObject(factor) {
+    if (selectedObjectIndex === -1) return;
+    const obj = objects[selectedObjectIndex];
+
+    if (obj.type === "circle") {
+        obj.radiusX *= factor;
+        obj.radiusY *= factor;
+    } else if (obj.type === "square") {
+        const oldW = obj.width;
+        const oldH = obj.height;
+        obj.width *= factor;
+        obj.height *= factor;
+        obj.x -= (obj.width - oldW) / 2;
+        obj.y -= (obj.height - oldH) / 2;
+    } else if (obj.type === "star") {
+        obj.radius *= factor;
+    } else if (obj.type === "triangle") {
+        const cx = (obj.x1 + obj.x2 + obj.x3) / 3;
+        const cy = (obj.y1 + obj.y2 + obj.y3) / 3;
+        obj.x1 = cx + (obj.x1 - cx) * factor;
+        obj.y1 = cy + (obj.y1 - cy) * factor;
+        obj.x2 = cx + (obj.x2 - cx) * factor;
+        obj.y2 = cy + (obj.y2 - cy) * factor;
+        obj.x3 = cx + (obj.x3 - cx) * factor;
+        obj.y3 = cy + (obj.y3 - cy) * factor;
+    } else if (obj.type === "freehand") {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        obj.points.forEach(p => {
+            if(p.x < minX) minX = p.x;
+            if(p.x > maxX) maxX = p.x;
+            if(p.y < minY) minY = p.y;
+            if(p.y > maxY) maxY = p.y;
+        });
+        const cx = (minX + maxX) / 2;
+        const cy = (minY + maxY) / 2;
+        obj.points.forEach(p => {
+            p.x = cx + (p.x - cx) * factor;
+            p.y = cy + (p.y - cy) * factor;
+        });
+    }
+    
+    redrawCanvas();
+    saveState();
+}
+
+scaleUpBtn.addEventListener("click", () => scaleSelectedObject(1.1));
+scaleDownBtn.addEventListener("click", () => scaleSelectedObject(0.9));
+
+widthInput.addEventListener("change", (e) => {
+    const val = parseInt(e.target.value);
+    if (val > 0) {
+        canvas.width = val;
+        formWidthInput.value = val;
+        redrawCanvas();
+    }
+});
+
+heightInput.addEventListener("change", (e) => {
+    const val = parseInt(e.target.value);
+    if (val > 0) {
+        canvas.height = val;
+        formHeightInput.value = val;
+        redrawCanvas();
+    }
 });
 
 clearButton.addEventListener("click", () => {
     objects = [];
+    selectedObjectIndex = -1;
+    objectControls.classList.add("d-none");
     redrawCanvas();
     updateObjectList();
     saveState();
@@ -202,11 +391,27 @@ function getMousePos(e) {
 }
 
 canvas.addEventListener("mousedown", (e) => {
-    isDrawing = true;
     const pos = getMousePos(e);
     startX = pos.x;
     startY = pos.y;
     
+    if (currentTool === "select") {
+        const index = getObjectAt(startX, startY);
+        if (index !== -1) {
+            selectObject(index);
+            isDragging = true;
+            lastMouseX = startX;
+            lastMouseY = startY;
+        } else {
+            selectedObjectIndex = -1;
+            objectControls.classList.add("d-none");
+            redrawCanvas();
+            updateObjectList();
+        }
+        return;
+    }
+    
+    isDrawing = true;
     if (currentTool === "freehand") {
         const freehandObj = {
             type: "freehand",
@@ -214,16 +419,38 @@ canvas.addEventListener("mousedown", (e) => {
             color: currentColor,
             size: currentSize,
             points: [{ x: startX, y: startY }],
-            isFilled: false
+            isFilled: isFilled
         };
         addObject(freehandObj);
     }
 });
 
 canvas.addEventListener("mousemove", (e) => {
-    if (!isDrawing) return;
-    
     const pos = getMousePos(e);
+    
+    if (isDragging && currentTool === "select" && selectedObjectIndex !== -1) {
+        const dx = pos.x - lastMouseX;
+        const dy = pos.y - lastMouseY;
+        const obj = objects[selectedObjectIndex];
+
+        if (obj.type === "freehand") {
+            obj.points.forEach(p => { p.x += dx; p.y += dy; });
+        } else if (obj.type === "triangle") {
+            obj.x1 += dx; obj.y1 += dy;
+            obj.x2 += dx; obj.y2 += dy;
+            obj.x3 += dx; obj.y3 += dy;
+        } else {
+            obj.x += dx;
+            obj.y += dy;
+        }
+
+        lastMouseX = pos.x;
+        lastMouseY = pos.y;
+        redrawCanvas();
+        return;
+    }
+
+    if (!isDrawing) return;
     
     if (currentTool === "freehand") {
         const currentFreehand = objects[objects.length - 1];
@@ -235,31 +462,64 @@ canvas.addEventListener("mousemove", (e) => {
         ctx.lineJoin = "round";
         
         ctx.beginPath();
-        ctx.moveTo(startX, startY);
+        const prevPoint = currentFreehand.points[currentFreehand.points.length - 2] || {x: startX, y: startY};
+        ctx.moveTo(prevPoint.x, prevPoint.y);
         ctx.lineTo(pos.x, pos.y);
         ctx.stroke();
-        startX = pos.x;
-        startY = pos.y;
         
-    } else if (currentTool === "line" || currentTool === "circle" || currentTool === "square" || currentTool === "star") {
+    } else if (["triangle", "circle", "square", "star"].includes(currentTool)) {
         redrawCanvas();
 
-        const previewObj = {
+        let previewObj = {
             type: currentTool,
             color: currentColor,
             size: currentSize,
-            x: startX,
-            y: startY,
-            x2: pos.x,
-            y2: pos.y,
-            radius: Math.sqrt(Math.pow(pos.x - startX, 2) + Math.pow(pos.y - startY, 2)),
             isFilled: isFilled
         };
+        
+        const width = pos.x - startX;
+        const height = pos.y - startY;
+
+        if (currentTool === "triangle") {
+            Object.assign(previewObj, {
+                x1: startX, y1: startY,
+                x2: pos.x, y2: pos.y,
+                x3: (2 * startX) - pos.x,
+                y3: pos.y
+            });
+        } else if (currentTool === "circle") {
+            Object.assign(previewObj, {
+                x: startX + width / 2,
+                y: startY + height / 2,
+                radiusX: Math.abs(width / 2),
+                radiusY: Math.abs(height / 2)
+            });
+        } else if (currentTool === "square") {
+            Object.assign(previewObj, {
+                x: startX,
+                y: startY,
+                width: width,
+                height: height
+            });
+        } else if (currentTool === "star") {
+            Object.assign(previewObj, {
+                x: startX,
+                y: startY,
+                radius: Math.sqrt(width*width + height*height)
+            });
+        }
+
         drawObject(previewObj);
     }
 });
 
 canvas.addEventListener("mouseup", (e) => {
+    if (isDragging) {
+        isDragging = false;
+        saveState();
+        return;
+    }
+
     if (!isDrawing) return;
     isDrawing = false;
     
@@ -268,36 +528,40 @@ canvas.addEventListener("mouseup", (e) => {
     const newObj = {
         color: currentColor,
         size: currentSize,
-        name: `${currentTool} ${objects.length + 1}`,
+        name: `${currentTool.charAt(0).toUpperCase() + currentTool.slice(1)} ${objects.length + 1}`,
         isFilled: isFilled
     };
 
     if (currentTool === "freehand") {
-    } else if (currentTool === "line") {
+    } else if (currentTool === "triangle") {
         Object.assign(newObj, {
-            type: "line",
+            type: "triangle",
             x1: startX,
             y1: startY,
             x2: pos.x,
             y2: pos.y,
-            isFilled: false
+            x3: (2 * startX) - pos.x,
+            y3: pos.y
         });
         addObject(newObj);
     } else if (currentTool === "circle") {
+        const width = pos.x - startX;
+        const height = pos.y - startY;
         Object.assign(newObj, {
             type: "circle",
-            x: startX,
-            y: startY,
-            radius: Math.sqrt(Math.pow(pos.x - startX, 2) + Math.pow(pos.y - startY, 2))
+            x: startX + width / 2,
+            y: startY + height / 2,
+            radiusX: Math.abs(width / 2),
+            radiusY: Math.abs(height / 2)
         });
         addObject(newObj);
     } else if (currentTool === "square") {
-        const dist = Math.max(Math.abs(pos.x - startX), Math.abs(pos.y - startY));
         Object.assign(newObj, {
             type: "square",
             x: startX,
             y: startY,
-            radius: dist
+            width: pos.x - startX,
+            height: pos.y - startY
         });
         addObject(newObj);
     } else if (currentTool === "star") {
@@ -321,6 +585,28 @@ canvas.addEventListener("mouseleave", () => {
         isDrawing = false;
         canvas.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
     }
+    if (isDragging) {
+        isDragging = false;
+        saveState();
+    }
 });
 
-updateUndoRedoButtons();
+document.addEventListener("DOMContentLoaded", () => {
+    const existingContentEl = document.getElementById("existingDrawingContent");
+    
+    if (existingContentEl && existingContentEl.textContent.trim().length > 0) {
+        try {
+            const content = existingContentEl.textContent.trim();
+            
+            if (content && content !== "" && content !== "null") {
+                objects = JSON.parse(content);
+                redrawCanvas();
+                updateObjectList();
+                saveState();
+            }
+        } catch (e) {
+            console.error("Error al carregar el dibuix existent:", e);
+        }
+    }
+    updateUndoRedoButtons();
+});
