@@ -1,3 +1,4 @@
+//CONSTANTS Y VARIABLES
 const canvas = document.getElementById("mycanvas");
 const ctx = canvas.getContext("2d");
 
@@ -37,6 +38,8 @@ let lastMouseX, lastMouseY;
 let objects = [];
 let history = [[]];
 let historyIndex = 0;
+
+//DIBUIX I RENDERITZAT
 
 function redrawCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -126,6 +129,8 @@ function drawSelectionBox(obj) {
     ctx.restore();
 }
 
+//LÒGICA DE SELECCIÓ I GESTIÓ D'OBJECTES
+
 function getObjectAt(x, y) {
     for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
@@ -158,6 +163,10 @@ function selectObject(index) {
         
         setTool("select");
         objectControls.classList.remove("d-none");
+
+        localStorage.setItem("paint_color", currentColor);
+        localStorage.setItem("paint_size", currentSize);
+        localStorage.setItem("paint_isFilled", isFilled);
     } else {
         objectControls.classList.add("d-none");
     }
@@ -171,6 +180,8 @@ function setTool(toolName) {
     document.querySelector(".tool-btn.active")?.classList.remove("active");
     const btn = document.querySelector(`.tool-btn[data-tool="${toolName}"]`);
     if (btn) btn.classList.add("active");
+    
+    localStorage.setItem("paint_tool", toolName);
 }
 
 function updateObjectList() {
@@ -220,6 +231,8 @@ function deleteObject(index) {
     saveState();
 }
 
+//HISTORIAL (DESFER/REFER)
+
 function saveState() {
     history = history.slice(0, historyIndex + 1);
     history.push(JSON.parse(JSON.stringify(objects)));
@@ -256,10 +269,13 @@ function updateUndoRedoButtons() {
     redoButton.disabled = (historyIndex >= history.length - 1);
 }
 
+//EVENT LISTENERS I CONTROLS
+
 toolButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-        setTool(btn.dataset.tool);
-        if (currentTool !== "select") {
+        const tool = btn.dataset.tool;
+        setTool(tool);
+        if (tool !== "select") {
             selectedObjectIndex = -1;
             objectControls.classList.add("d-none");
             redrawCanvas();
@@ -271,6 +287,9 @@ toolButtons.forEach(btn => {
 fillButton.addEventListener("click", () => {
     isFilled = !isFilled;
     fillButton.classList.toggle("active");
+    
+    localStorage.setItem("paint_isFilled", isFilled);
+
     if (selectedObjectIndex !== -1) {
         objects[selectedObjectIndex].isFilled = isFilled;
         redrawCanvas();
@@ -281,6 +300,9 @@ fillButton.addEventListener("click", () => {
 
 colorPicker.addEventListener("input", (e) => {
     currentColor = e.target.value;
+    
+    localStorage.setItem("paint_color", currentColor);
+
     if (selectedObjectIndex !== -1) {
         objects[selectedObjectIndex].color = currentColor;
         redrawCanvas();
@@ -291,6 +313,9 @@ colorPicker.addEventListener("change", () => { if (selectedObjectIndex !== -1) s
 sizeSlider.addEventListener("input", (e) => {
     currentSize = e.target.value;
     sizeValueSpan.textContent = currentSize;
+    
+    localStorage.setItem("paint_size", currentSize);
+
     if (selectedObjectIndex !== -1) {
         objects[selectedObjectIndex].size = currentSize;
         redrawCanvas();
@@ -379,6 +404,8 @@ redoButton.addEventListener("click", redo);
 saveForm.addEventListener("submit", (e) => {
     drawingContentInput.value = JSON.stringify(objects);
 });
+
+//INTERACCIÓ AMB RATOLÍ
 
 function getMousePos(e) {
     const rect = canvas.getBoundingClientRect();
@@ -505,7 +532,7 @@ canvas.addEventListener("mousemove", (e) => {
             Object.assign(previewObj, {
                 x: startX,
                 y: startY,
-                radius: Math.sqrt(width*width + height*height)
+                radius: Math.sqrt(Math.pow(pos.x - startX, 2) + Math.pow(pos.y - startY, 2))
             });
         }
 
@@ -591,7 +618,35 @@ canvas.addEventListener("mouseleave", () => {
     }
 });
 
+//INICIALITZACIÓ
+
 document.addEventListener("DOMContentLoaded", () => {
+    
+    const savedTool = localStorage.getItem("paint_tool");
+    const savedColor = localStorage.getItem("paint_color");
+    const savedSize = localStorage.getItem("paint_size");
+    const savedIsFilled = localStorage.getItem("paint_isFilled");
+
+    if (savedTool) {
+        setTool(savedTool);
+    }
+
+    if (savedColor) {
+        currentColor = savedColor;
+        colorPicker.value = savedColor;
+    }
+
+    if (savedSize) {
+        currentSize = savedSize;
+        sizeSlider.value = savedSize;
+        sizeValueSpan.textContent = savedSize;
+    }
+
+    if (savedIsFilled === "true") {
+        isFilled = true;
+        fillButton.classList.add("active");
+    }
+
     const existingContentEl = document.getElementById("existingDrawingContent");
     
     if (existingContentEl && existingContentEl.textContent.trim().length > 0) {

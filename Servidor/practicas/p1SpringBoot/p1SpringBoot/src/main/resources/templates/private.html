@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Private</title>
 </head>
 <body>
-
+    <h1>Benvingut a la zona privada, <span th:text="${username}">Usuario</span>.</h1>
+    <h2>Que vols fer?</h2>
+    <br>
+    <a href="/canvas"></a>
 </body>
 </html>

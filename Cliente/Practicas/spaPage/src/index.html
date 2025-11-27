@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hacker News Clone</title>
+  </head>
+  <body class="bg-dark">
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-warning fixed-top">
+      <div class="container">
+        <a class="navbar-brand fw-bold text-dark" href="/top" data-link>Hacker News JS</a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="/top" data-link>Top</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="/new" data-link>New</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="/best" data-link>Best</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="app" class="container mt-5 pt-5">
+      <div class="text-center mt-5 text-light">
+        <h3>Cargando aplicación...</h3>
+      </div>
+    </main>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

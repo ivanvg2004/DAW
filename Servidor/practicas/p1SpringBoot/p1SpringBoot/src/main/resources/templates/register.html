@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Register</title>
 </head>
 <body>
-
+    <div th:if="${error}" style="color: red;">
+        <p th:text="${error}"></p>
+    </div>
+    <form action="" method="post">
+        <input type="text" name="username" id="username" placeholder="Nom d'usuari" required>
+        <input type="text" name="name" id="name" placeholder="Nom complet" required>
+        <input type="password" name="password" id="password" placeholder="Contrasenya" required>
+        <button type="submit" value="">Register</button>
+        <br>
+        <a href="/login">Iniciar sessió</a>
+        <a href="/">Enrere</a>
+    </form>
 </body>
 </html>

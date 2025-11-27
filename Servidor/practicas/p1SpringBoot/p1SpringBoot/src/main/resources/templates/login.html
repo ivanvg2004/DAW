@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-
+    <div th:if="${error}" style="color: red;">
+        <p th:text="${error}"></p>
+    </div>
+    <form action="/login" method="post">
+        <input type="text" name="username" id="username" placeholder="Nom d'usuari">
+        <input type="password" name="password" id="password" placeholder="Contrasenya">
+        <button type="submit" value="">Login</button>
+        <br>
+        <a href="/register">Registrar</a>
+        <a href="/">Enrere</a>
+    </form>
 </body>
 </html>

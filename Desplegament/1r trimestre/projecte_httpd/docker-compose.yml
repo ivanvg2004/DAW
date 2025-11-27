@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  apache:
+    image: httpd:2.4
+    ports:
+      - "81:80"
+    volumes:
+      - ./my-httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./htdocs:/usr/local/apache2/htdocs
+      - ./log:/var/log/apache2
+
+  goaccess:
+    image: allinurl/goaccess
+    container_name: goaccess_monitor
+    depends_on:
+      - apache
+    ports:
+      - "7890:7890"
+    volumes:
+      - ./log:/srv/logs:ro
+      - ./htdocs/daw143.local:/srv/report
+    command: >
+      /srv/logs/daw143-access.log 
+      -o /srv/report/monitor.html 
+      --log-format=COMBINED 
+      --real-time-html 
+      --addr=0.0.0.0 
+      --port=7890 
+      --ws-url=ws://localhost:7890

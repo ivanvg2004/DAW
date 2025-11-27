@@ -1,5 +1,5 @@
 version: '2.2'
-name: proyecto2  # <-- AÑADE ESTA LÍNEA
+name: proyecto2
 
 services:
   tomcat:
