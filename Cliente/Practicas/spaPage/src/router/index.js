@@ -1,4 +1,6 @@
 import Stories from "../pages/Stories";
+import User from "../pages/User";
+
 
 const routes = {
     '/': Stories,
@@ -38,7 +40,13 @@ class Router{
     }
 
     async render(path) {
-        const page = routes[path];
+        let page = routes[path];
+
+        if(!page) {
+            if (path.startsWith('/user/')) {
+                page = User;
+            }
+        }
 
         if(page) {
             this.content.innerHTML = await page(path);

@@ -22,3 +22,9 @@ export async function getItem(id) {
     const snapshot = await get(itemRef);
     return snapshot.val();    
 }
+
+export async function getUser(id) {
+    const userRef = ref(db,`v0/user/${id}`);
+    const snapshot = await get(userRef);
+    return snapshot.val();
+}
