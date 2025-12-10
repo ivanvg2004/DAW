@@ -1,37 +1,44 @@
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, get, child } from "firebase/database";
-
-
-const app = initializeApp({
-    databaseURL: "https://hacker-news.firebaseio.com",
-});
-
-const db = getDatabase(app);
+// URL base de la API pública de Hacker News (Firebase)
+const BASE_URL = 'https://hacker-news.firebaseio.com/v0';
 
 export function listenToStoryIds(type, callback) {
-    const storiesRef = ref(db, `v0/${type}stories`);
+    const url = `${BASE_URL}/${type}stories.json`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(ids => {
+            callback(ids || []);
+        })
+        .catch(error => {
+            console.error(`Error al cargar ${type}:`, error);
+            callback([]);
+        });
 
-    return onValue(storiesRef, (snapshot) => {
-        const ids = snapshot.val();
-        callback(ids || []);
-    });
+
+    return () => {};
 }
 
 export async function getItem(id) {
-    const itemRef = ref(db, `v0/item/${id}`);
-    const snapshot = await get(itemRef);
-    return snapshot.val();    
+    try {
+        const response = await fetch(`${BASE_URL}/item/${id}.json`);
+        return await response.json();
+    } catch (error) {
+        console.error(`Error item ${id}:`, error);
+        return null;
+    }
 }
 
 export async function getUser(id) {
-    const userRef = ref(db,`v0/user/${id}`);
-    const snapshot = await get(userRef);
-    return snapshot.val();
+    try {
+        const response = await fetch(`${BASE_URL}/user/${id}.json`);
+        return await response.json();
+    } catch (error) {
+        console.error(`Error usuario ${id}:`, error);
+        return null;
+    }
 }
 
-export function listenToItem(id, callback){
-    const itemRef = ref(db, `v0/item/${id}`);
-    return onValue(itemRef, (snapshot) => {
-        callback(snapshot.val());
-    });
+export function listenToItem(id, callback) {
+    getItem(id).then(item => callback(item));
+    return () => {}; 
 }

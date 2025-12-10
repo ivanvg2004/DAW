@@ -52,11 +52,10 @@ async function renderNextBatch(count) {
     const listContainer = document.getElementById('stories-list');
     const nextIds = allStoryIds.slice(currentIndex, currentIndex + count);
     
-    // 1. Descargamos las 10 historias EN PARALELO (Mucho más rápido)
     const promises = nextIds.map(id => getItem(id));
     const stories = await Promise.all(promises);
 
-    // 2. Las pintamos en el DOM
+    // las pintamos en el DOM
     stories.forEach(story => {
         if (story) {
             const itemHtml = `
@@ -85,7 +84,7 @@ async function renderNextBatch(count) {
 
     currentIndex += count;
     
-    // Gestionar botón "Load More"
+    // Gestionar botón cargar mas
     const loadMoreBtn = document.getElementById('load-more-btn');
     if (loadMoreBtn) {
         if (currentIndex < allStoryIds.length) {
