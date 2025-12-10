@@ -24,7 +24,6 @@ export default async function Comments(path) {
     return template;
 }
 
-// ESTA ES LA FUNCIÓN QUE TE FALTABA
 async function loadStoryAndComments(id) {
     const story = await getItem(id);
     const storyContainer = document.getElementById('story-details');
@@ -32,7 +31,7 @@ async function loadStoryAndComments(id) {
 
     if (!story || !storyContainer) return;
 
-    // 1. Pintamos la Cabecera (La Noticia)
+    //Cabecera (La Noticia)
     storyContainer.innerHTML = `
         <div class="card shadow-sm border-primary">
             <div class="card-body">
@@ -50,7 +49,7 @@ async function loadStoryAndComments(id) {
         </div>
     `;
 
-    // 2. Iniciamos la carga recursiva de comentarios
+    // Carga recursiva de comentarios
     if (story.kids && story.kids.length > 0) {
         commentsContainer.innerHTML = ''; // Limpiamos
         await renderComments(story.kids, commentsContainer);
