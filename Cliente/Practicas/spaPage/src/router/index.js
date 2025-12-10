@@ -1,4 +1,4 @@
-import Stories from "../pages/Stories.js"; // Es buena práctica poner .js
+import Stories from "../pages/Stories.js";
 import User from "../pages/User.js";
 import Comments from "../pages/Comments.js";
 

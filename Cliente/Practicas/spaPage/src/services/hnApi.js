@@ -28,3 +28,10 @@ export async function getUser(id) {
     const snapshot = await get(userRef);
     return snapshot.val();
 }
+
+export function listenToItem(id, callback){
+    const itemRef = ref(db, `v0/item/${id}`);
+    return onValue(itemRef, (snapshot) => {
+        callback(snapshot.val());
+    });
+}
