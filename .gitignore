@@ -1,4 +1,5 @@
 Cliente/primerTrismestre/project
 Projectes/Projecte2025-1
 
-/DAW/Servidor
+# Ignorar archivos de bases de datos locales
+Servidor/practicas/p1SpringBoot/p1SpringBoot/mysql-data/
