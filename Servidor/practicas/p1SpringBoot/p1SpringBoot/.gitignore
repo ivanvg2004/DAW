@@ -31,3 +31,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar datos de la BBDD
+mysql-data/
+**/mysql-data/
+
+# Ignorar compilados de Java y Maven
+target/
+*.class
+.mvn/
+mvnw
+mvnw.cmd
+
+# Ignorar archivos del IDE (si usas IntelliJ o VSCode)
+.idea/
+.vscode/
+*.iml

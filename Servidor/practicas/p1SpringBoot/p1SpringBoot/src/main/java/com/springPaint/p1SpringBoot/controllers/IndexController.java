@@ -12,10 +12,12 @@ public class IndexController {
     public String index(){
         return "index";
     }
+
     @GetMapping("private")
     public String privatePage(HttpSession session, Model model){
         String username = (String) session.getAttribute("username");
         model.addAttribute("username", username);
+        model.addAttribute("error", "Primer has d'iniciar sessio!");
 
         return "private";
     }

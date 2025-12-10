@@ -44,4 +44,9 @@ public class UserDaoImplSQL implements UserDao{
     public void saveUser(User user) {
         jdbcTemplate.update("insert into user (username, name, password) values (?,?,?)", user.getUsername(), user.getName(), user.getPassword());
     }
+
+    @Override
+    public List<User> getAllUsers() {
+        return jdbcTemplate.query("SELECT * FROM user", userRowMapper);
+    }
 }

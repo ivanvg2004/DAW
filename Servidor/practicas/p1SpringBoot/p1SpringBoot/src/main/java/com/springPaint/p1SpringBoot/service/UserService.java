@@ -5,6 +5,8 @@ import com.springPaint.p1SpringBoot.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     @Autowired
@@ -31,5 +33,9 @@ public class UserService {
             return user;
         }
         return null;
+    }
+
+    public List<User> getAllUsers() {
+        return userDao.getAllUsers();
     }
 }

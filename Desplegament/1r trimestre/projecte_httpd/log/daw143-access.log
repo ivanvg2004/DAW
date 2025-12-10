@@ -16,3 +16,8 @@
 172.21.0.1 - - [21/Nov/2025:13:12:06 +0000] "GET /favicon.ico HTTP/1.1" 404 268 "http://daw143.local:81/monitor.html" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
 172.21.0.1 - - [21/Nov/2025:13:12:26 +0000] "GET /monitor.html HTTP/1.1" 404 268 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
 172.21.0.1 - - [21/Nov/2025:13:18:00 +0000] "GET /monitor.html HTTP/1.1" 200 728380 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+172.21.0.1 - - [05/Dec/2025:10:51:11 +0000] "GET / HTTP/1.1" 304 - "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+172.21.0.1 - - [05/Dec/2025:10:51:11 +0000] "GET /favicon.ico HTTP/1.1" 404 268 "http://daw143.local:81/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+172.21.0.1 - - [05/Dec/2025:10:51:52 +0000] "GET /index.html HTTP/1.1" 304 - "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+172.21.0.1 - - [05/Dec/2025:10:52:04 +0000] "GET /monitor.html HTTP/1.1" 200 728663 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+172.21.0.1 - - [05/Dec/2025:11:08:30 +0000] "GET /administracio HTTP/1.1" 401 381 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"

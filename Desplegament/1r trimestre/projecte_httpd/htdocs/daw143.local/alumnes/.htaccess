@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Zona Docker Alumnes"
+AuthUserFile /usr/local/apache2/secrets/passwords
+Require user alumne

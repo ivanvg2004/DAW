@@ -8,6 +8,7 @@ services:
       - ./my-httpd.conf:/usr/local/apache2/conf/httpd.conf
       - ./htdocs:/usr/local/apache2/htdocs
       - ./log:/var/log/apache2
+      - ./secrets:/usr/local/apache2/secrets
 
   goaccess:
     image: allinurl/goaccess
