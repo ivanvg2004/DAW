@@ -404,4 +404,4 @@ function autoSave() {
     .catch(error => console.error("Error en auto-save:", error));
 }
 
-setInterval(autoSave, 60000);
+setInterval(autoSave, 30000);

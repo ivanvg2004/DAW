@@ -40,6 +40,19 @@ public class P1SpringBootApplication implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor)
-                .addPathPatterns("/private");
+                .addPathPatterns(
+                        "/private",
+                        "/canvas/**",
+                        "/dibuixos/**",
+                        "/visualitzar/**",
+                        "/compartir/**",
+                        "/api/**",
+                        "/esborrar",
+                        "/restaurar",
+                        "/eliminarDefinitiu",
+                        "/clonar",
+                        "/dejar-de-compartir"
+                )
+                .excludePathPatterns("/login", "/register", "/", "/css/**", "/js/**");
     }
 }

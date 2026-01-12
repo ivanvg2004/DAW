@@ -1,4 +1,3 @@
-// URL base de la API pública de Hacker News (Firebase)
 const BASE_URL = 'https://hacker-news.firebaseio.com/v0';
 
 export function listenToStoryIds(type, callback) {

@@ -26,7 +26,6 @@ public class DibuixController {
     public String verDibuixos(@RequestParam(required = false, defaultValue = "active") String filter,
                               HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
 
         List<Canvas> lista;
         String titulo;
@@ -57,20 +56,15 @@ public class DibuixController {
     @ResponseBody
     public Map<String, Object> esborrarDibuix(@RequestParam int id, HttpSession session){
         Map<String, Object> response = new HashMap<>();
-        User user = (User) session.getAttribute("user");
 
-        if (user != null){
-            try{
-                canvasService.moveToTrash(id);
-                response.put("success", true);
-            }catch (Exception e) {
-                response.put("success", false);
-                response.put("message", "Error al eliminar");
-            }
-        }else {
+        try{
+            canvasService.moveToTrash(id);
+            response.put("success", true);
+        }catch (Exception e) {
             response.put("success", false);
-            response.put("message", "No autorizado");
+            response.put("message", "Error al eliminar");
         }
+
         return response;
     }
 
@@ -78,20 +72,15 @@ public class DibuixController {
     @ResponseBody
     public Map<String, Object> restaurarDibuix(@RequestParam int id, HttpSession session){
         Map<String, Object> response = new HashMap<>();
-        User user = (User) session.getAttribute("user");
 
-        if (user != null){
-            try {
-                canvasService.restoreCanvas(id);
-                response.put("success", true);
-            } catch (Exception e) {
-                response.put("success", false);
-                response.put("message", "Error al restaurar");
-            }
-        } else {
+        try {
+            canvasService.restoreCanvas(id);
+            response.put("success", true);
+        } catch (Exception e) {
             response.put("success", false);
-            response.put("message", "No autorizado");
+            response.put("message", "Error al restaurar");
         }
+
         return response;
     }
 
@@ -99,20 +88,15 @@ public class DibuixController {
     @ResponseBody
     public Map<String, Object> eliminarDefinitiu(@RequestParam int id, HttpSession session){
         Map<String, Object> response = new HashMap<>();
-        User user = (User) session.getAttribute("user");
 
-        if (user != null){
-            try {
-                canvasService.deleteCanvasPermanently(id);
-                response.put("success", true);
-            } catch (Exception e) {
-                response.put("success", false);
-                response.put("message", "Error al eliminar definitivamente");
-            }
-        } else {
+        try {
+            canvasService.deleteCanvasPermanently(id);
+            response.put("success", true);
+        } catch (Exception e) {
             response.put("success", false);
-            response.put("message", "No autorizado");
+            response.put("message", "Error al eliminar definitivamente");
         }
+
         return response;
     }
 
@@ -122,18 +106,14 @@ public class DibuixController {
         Map<String, Object> response = new HashMap<>();
         User user = (User) session.getAttribute("user");
 
-        if (user != null){
-            try {
-                canvasService.cloneCanvas(id, user.getId());
-                response.put("success", true);
-            } catch (Exception e) {
-                response.put("success", false);
-                response.put("message", "Error al clonar: " + e.getMessage());
-            }
-        } else {
+        try {
+            canvasService.cloneCanvas(id, user.getId());
+            response.put("success", true);
+        } catch (Exception e) {
             response.put("success", false);
-            response.put("message", "No autorizado");
+            response.put("message", "Error al clonar: " + e.getMessage());
         }
+
         return response;
     }
 }

@@ -1,5 +1,6 @@
 package com.springPaint.p1SpringBoot.controllers;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import com.springPaint.p1SpringBoot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,8 @@ public class RegisterController {
     private UserService userService;
 
     @GetMapping("/register")
-    public String register(){
+    public String register(HttpSession session){
+        session.invalidate();
         return "register";
     }
 

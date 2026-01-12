@@ -22,7 +22,6 @@ public class VisualitzarController {
     public String visualizeCanvas(@RequestParam int id, @RequestParam(required = false) Integer versionId,
                                   HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
 
         Canvas canvas = canvasService.getCanvasById(id);
 

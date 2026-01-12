@@ -5,7 +5,6 @@ let allStoryIds = [];
 let currentIndex = 0;
 
 export default async function Stories(path) {
-  // si había un listener escuchando otra lista, lo cerramos
   if (unsubscribeIds) {
       unsubscribeIds();
       unsubscribeIds = null;
@@ -43,7 +42,7 @@ async function init(type) {
         const listContainer = document.getElementById('stories-list');
         if (listContainer) {
             listContainer.innerHTML = '';
-            await renderNextBatch(10);    // cargamos las primeras 10 
+            await renderNextBatch(10);
         }
     });
 }
@@ -55,7 +54,6 @@ async function renderNextBatch(count) {
     const promises = nextIds.map(id => getItem(id));
     const stories = await Promise.all(promises);
 
-    // las pintamos en el DOM
     stories.forEach(story => {
         if (story) {
             const itemHtml = `
@@ -84,7 +82,6 @@ async function renderNextBatch(count) {
 
     currentIndex += count;
     
-    // Gestionar botón cargar mas
     const loadMoreBtn = document.getElementById('load-more-btn');
     if (loadMoreBtn) {
         if (currentIndex < allStoryIds.length) {

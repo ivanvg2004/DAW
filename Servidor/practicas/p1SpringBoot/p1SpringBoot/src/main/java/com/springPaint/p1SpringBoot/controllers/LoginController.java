@@ -16,7 +16,8 @@ public class LoginController {
     private UserService userService;
 
     @GetMapping("login")
-    public String login(){
+    public String login(HttpSession session){
+        session.invalidate();
         return "login";
     }
     @PostMapping("login")

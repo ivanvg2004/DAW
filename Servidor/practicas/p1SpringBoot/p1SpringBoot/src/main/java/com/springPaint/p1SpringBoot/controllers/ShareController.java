@@ -29,7 +29,6 @@ public class ShareController {
     @GetMapping("/compartir")
     public String sharePage(@RequestParam int id, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
 
         Canvas canvas = canvasService.getCanvasById(id);
         if (canvas == null || canvas.getIdAutor() != user.getId()) {
@@ -51,7 +50,7 @@ public class ShareController {
 
         model.addAttribute("canvas", canvas);
         model.addAttribute("shares", usersWithAccess);
-        model.addAttribute("availableUsers", allUsers); // Pasar al modelo
+        model.addAttribute("availableUsers", allUsers);
 
         return "compartir";
     }
@@ -62,15 +61,12 @@ public class ShareController {
                            @RequestParam(defaultValue = "false") boolean canWrite,
                            HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
 
         try {
             canvasService.shareCanvas(canvasId, user.getId(), username, canWrite);
         } catch (Exception e) {
             e.printStackTrace();
-
             model.addAttribute("error", "Error al compartir: " + e.getMessage());
-
             return sharePage(canvasId, session, model);
         }
 
@@ -80,13 +76,13 @@ public class ShareController {
     @PostMapping("/dejar-de-compartir")
     public String removeShare(@RequestParam int canvasId, @RequestParam int userId, HttpSession session) {
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            try {
-                canvasService.stopSharing(canvasId, user.getId(), userId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        try {
+            canvasService.stopSharing(canvasId, user.getId(), userId);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return "redirect:/compartir?id=" + canvasId;
     }
 }

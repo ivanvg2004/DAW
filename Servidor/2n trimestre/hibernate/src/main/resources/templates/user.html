@@ -2,9 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>User</title>
 </head>
 <body>
+
+<form method="post">
+    Name: <input type="text" name="name" id="">
+    <br>
+    Password: <input type="password" name="password" id="">
+    <br>
+    Birth Year <input type="number" name="birth" id="">
+    <br>
+    Job:
+    <select name="jobs">
+        <option th:each="j : ${jobs}" th:value="${j.id}">
+            [[${j.description}]]
+        </option>
+    </select>
+    <br>
+    <input type="submit">
+</form>
+
+<ul>
+    <li th:each="u: ${users}">
+        [[${u.name}]]
+    </li>
+</ul>
 
 </body>
 </html>

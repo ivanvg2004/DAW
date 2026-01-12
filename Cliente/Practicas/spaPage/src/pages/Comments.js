@@ -1,7 +1,6 @@
 import { getItem } from "../services/hnApi.js";
 
 export default async function Comments(path) {
-    // URL = /item/12345 -> itemId = 12345
     const itemId = path.split('/')[2];
 
     const template = `
@@ -30,8 +29,6 @@ async function loadStoryAndComments(id) {
     const commentsContainer = document.getElementById('comments-container');
 
     if (!story || !storyContainer) return;
-
-    //Cabecera (La Noticia)
     storyContainer.innerHTML = `
         <div class="card shadow-sm border-primary">
             <div class="card-body">
@@ -49,9 +46,8 @@ async function loadStoryAndComments(id) {
         </div>
     `;
 
-    // Carga recursiva de comentarios
     if (story.kids && story.kids.length > 0) {
-        commentsContainer.innerHTML = ''; // Limpiamos
+        commentsContainer.innerHTML = '';
         await renderComments(story.kids, commentsContainer);
     } else {
         commentsContainer.innerHTML = '<div class="p-3 text-muted">No hay comentarios aún.</div>';

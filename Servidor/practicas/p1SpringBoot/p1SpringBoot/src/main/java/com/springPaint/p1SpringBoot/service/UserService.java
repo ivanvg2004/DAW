@@ -3,6 +3,7 @@ package com.springPaint.p1SpringBoot.service;
 import com.springPaint.p1SpringBoot.dao.UserDao;
 import com.springPaint.p1SpringBoot.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User getUser(int id) {return userDao.getUser(id);}
 
@@ -21,7 +25,8 @@ public class UserService {
         User user = new User();
         user.setUsername(username);
         user.setName(name);
-        user.setPassword(password);
+        String encodedPassword = passwordEncoder.encode(password);
+        user.setPassword(encodedPassword);
         userDao.saveUser(user);
         return true;
     }
@@ -29,7 +34,7 @@ public class UserService {
     public User validateUser(String username, String password){
         User user = userDao.getUserByUsername(username);
 
-        if (user != null && user.getPassword().equals(password)){
+        if (user != null && passwordEncoder.matches(password, user.getPassword())){
             return user;
         }
         return null;

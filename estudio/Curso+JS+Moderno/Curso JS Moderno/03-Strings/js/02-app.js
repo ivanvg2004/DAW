@@ -5,10 +5,10 @@ console.log(producto);
 //conocer cantidad letras String
 console.log(producto.length);
 
-//producto tiene la palabra?
+//producto que posicion tiene la palabra?
 console.log(producto.indexOf('Monitor'));
 
 //true or false
-console.log(producto.includes("Monitor"));
+console.log(producto.includes("Monitor")); //true
 
-console.log(producto.includes("Tablet"));
+console.log(producto.includes("Tablet")); //false

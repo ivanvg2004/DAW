@@ -1,8 +1,10 @@
 package com.springPaint.p1SpringBoot.controllers;
 
+import com.springPaint.p1SpringBoot.dao.UserDao;
 import com.springPaint.p1SpringBoot.models.Canvas;
 import com.springPaint.p1SpringBoot.models.User;
 import com.springPaint.p1SpringBoot.service.CanvasService;
+import com.springPaint.p1SpringBoot.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
@@ -23,7 +25,6 @@ public class CanvasController {
     @GetMapping("canvas")
     public String canvasSession(@RequestParam(required = false) Integer id, HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
-        if (user == null) return "redirect:/login";
 
         if (id != null) {
             Map<String, Object> data = canvasService.getCanvasForEdit(id);
@@ -46,9 +47,7 @@ public class CanvasController {
     @PostMapping("/canvas")
     public String saveCanvas(@RequestParam(required = false) Integer id, @RequestParam String name, @RequestParam String permission, @RequestParam(required = false) String content, HttpSession session){
         User user = (User) session.getAttribute("user");
-        if (user == null){
-            return "redirect:/login";
-        }
+
         if (content == null || content.trim().isEmpty() || content.equals("[]") && name.isEmpty()){
             return "redirect:/private";
         }
@@ -78,11 +77,6 @@ public class CanvasController {
     public Map<String, Object> autoSave(@RequestParam(required = false) Integer id, @RequestParam String name, @RequestParam String permission, @RequestParam String content, HttpSession session){
         Map<String, Object> response = new HashMap<>();
         User user = (User) session.getAttribute("user");
-
-        if(user == null){
-            response.put("status", "error");
-            return response;
-        }
 
         try{
             if (content == null || content.equals("[]")){
